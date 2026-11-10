@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phạm Đức Tài | Portfolio</title>
+    <meta
+      name="description"
+      content="Portfolio cá nhân của Phạm Đức Tài - Software Engineer & Full-Stack Developer."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: '#0A192F',
+              midnight: '#112240',
+              slateText: '#94A3B8',
+              cyanAccent: '#06B6D4',
+              golden: '#FBBF24'
+            },
+            boxShadow: {
+              glow: '0 0 30px rgba(6, 182, 212, 0.35)'
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        --navy: #0a192f;
+        --midnight: #112240;
+        --slate: #94a3b8;
+        --cyan: #06b6d4;
+        --gold: #fbbf24;
+        --page-bg: #020b18;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background:
+          radial-gradient(circle at top, rgba(6, 182, 212, 0.12), transparent 30%),
+          linear-gradient(to bottom, var(--navy), #020b18 60%);
+        color: #e2e8f0;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+      }
+
+      .lightning-layer {
+        position: fixed;
+        inset: 0;
+        background: rgba(3, 7, 18, 0.2);
+        pointer-events: none;
+        z-index: 40;
+        mix-blend-mode: screen;
+        overflow: hidden;
+      }
+
+      .flash-surface {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.22), rgba(6, 182, 212, 0.12), rgba(2, 10, 18, 0));
+      }
+
+      .flash-surface.active {
+        animation: lightningPulse 0.18s ease-out forwards;
+      }
+
+      .flash-surface.flicker {
+        animation: lampFlicker 0.22s linear infinite alternate;
+      }
+
+      .bolt {
+        position: absolute;
+        top: -22vh;
+        width: 4px;
+        border-radius: 9999px;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(168, 236, 255, 0.9), rgba(255, 255, 255, 0));
+        box-shadow: 0 0 16px rgba(255, 255, 255, 0.75), 0 0 28px rgba(6, 182, 212, 0.8), 0 0 42px rgba(125, 211, 252, 0.7);
+        animation: boltStrike 0.22s ease-out forwards;
+      }
+
+      .prompt-badge {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 70;
+        padding: 0.7rem 1.2rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(6, 182, 212, 0.5);
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(10px);
+        color: #dbeafe;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        box-shadow: 0 0 24px rgba(6, 182, 212, 0.18);
+        animation: promptBreathe 2.1s ease-in-out infinite alternate;
+        transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
+      }
+
+      .prompt-badge.hidden {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-50%) translateY(-8px);
+      }
+
+      .cv-shell {
+        position: relative;
+        z-index: 10;
+        transition: transform 0.55s ease, opacity 0.55s ease, filter 0.55s ease;
+      }
+
+      .cv-shell.exploding {
+        animation: explosionShake 0.42s ease-out forwards;
+      }
+
+      .cv-shell.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .cv-shell.restore {
+        animation: restoreIn 0.7s ease forwards;
+      }
+
+      .new-year-panel {
+        position: fixed;
+        inset: 0;
+        z-index: 80;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.94);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+
+      .new-year-panel.show {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+
+      .new-year-panel.fade-out {
+        opacity: 0;
+      }
+
+      .new-year-text {
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        line-height: 1.05;
+        color: #fef3c7;
+        text-shadow:
+          0 0 10px rgba(251, 191, 36, 0.9),
+          0 0 20px rgba(251, 191, 36, 0.75),
+          0 0 32px rgba(6, 182, 212, 0.4),
+          0 0 52px rgba(251, 191, 36, 0.55);
+        animation: neonPulse 1.2s ease-in-out infinite alternate;
+      }
+
+      .fireworks-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .fireworks-canvas.show {
+        opacity: 1;
+      }
+
+      .fireworks-canvas.fade-out {
+        opacity: 0;
+        transition: opacity 0.8s ease;
+      }
+
+      @keyframes promptBreathe {
+        0% {
+          box-shadow: 0 0 18px rgba(6, 182, 212, 0.15);
+          transform: translateX(-50%) translateY(0);
+        }
+        100% {
+          box-shadow: 0 0 30px rgba(6, 182, 212, 0.35);
+          transform: translateX(-50%) translateY(-3px);
+        }
+      }
+
+      @keyframes lightningPulse {
+        0% {
+          opacity: 0;
+          background: rgba(255, 255, 255, 0.04);
+        }
+        18% {
+          opacity: 1;
+          background: radial-gradient(circle at center, rgba(255, 255, 255, 0.42), rgba(6, 182, 212, 0.28), rgba(2, 10, 18, 0));
+        }
+        30% {
+          opacity: 0.85;
+          background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3), rgba(6, 182, 212, 0.18), rgba(2, 10, 18, 0));
+        }
+        100% {
+          opacity: 0;
+          background: rgba(255, 255, 255, 0);
+        }
+      }
+
+      @keyframes lampFlicker {
+        0%, 100% {
+          opacity: 0.05;
+          filter: brightness(0.75);
+        }
+        8% {
+          opacity: 0.4;
+          filter: brightness(1.2);
+        }
+        11% {
+          opacity: 0.08;
+        }
+        18% {
+          opacity: 0.35;
+        }
+        22% {
+          opacity: 0.12;
+        }
+        44% {
+          opacity: 0.86;
+        }
+        46% {
+          opacity: 0.2;
+        }
+        48% {
+          opacity: 0.75;
+        }
+        52% {
+          opacity: 0.1;
+        }
+      }
+
+      @keyframes boltStrike {
+        0% {
+          opacity: 0;
+          transform: scaleY(0.15) translateY(-20px);
+        }
+        24% {
+          opacity: 1;
+        }
+        55% {
+          opacity: 0.88;
+        }
+        100% {
+          opacity: 0;
+          transform: scaleY(1.5) translateY(26px);
+        }
+      }
+
+      @keyframes explosionShake {
+        0% { transform: scale(1) translate(0, 0); filter: blur(0); opacity: 1; }
+        20% { transform: scale(1.02) translate(-6px, 2px) rotate(-1deg); filter: blur(2px); }
+        45% { transform: scale(0.96) translate(8px, -6px) rotate(1.2deg); filter: blur(4px); opacity: 0.7; }
+        100% { transform: scale(0.9) translate(0, 0); filter: blur(10px); opacity: 0; }
+      }
+
+      @keyframes restoreIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.94) translateY(12px);
+          filter: blur(8px);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+          filter: blur(0);
+        }
+      }
+
+      @keyframes neonPulse {
+        from {
+          text-shadow:
+            0 0 12px rgba(251, 191, 36, 0.8),
+            0 0 22px rgba(251, 191, 36, 0.7),
+            0 0 30px rgba(6, 182, 212, 0.4);
+        }
+        to {
+          text-shadow:
+            0 0 18px rgba(251, 191, 36, 0.95),
+            0 0 32px rgba(251, 191, 36, 0.9),
+            0 0 42px rgba(6, 182, 212, 0.8);
+        }
+      }
+
+      @keyframes burstPop {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.15);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .prompt-badge {
+          max-width: 88vw;
+          text-align: center;
+          font-size: 0.58rem;
+          letter-spacing: 0.04em;
+          padding: 0.62rem 0.8rem;
+        }
+
+        .new-year-text {
+          font-size: clamp(1.5rem, 8vw, 3rem);
+          letter-spacing: 0.08em;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen antialiased overflow-x-hidden">
+    <div id="lightningLayer" class="lightning-layer" aria-hidden="true">
+      <div id="flashSurface" class="flash-surface"></div>
+    </div>
+
+    <div id="promptBadge" class="prompt-badge">⚡ Click anywhere to trigger the 2029 New Year Surprise!</div>
+
+    <div id="cvShell" class="cv-shell">
+      <header class="sticky top-0 z-30 border-b border-slate-700/50 bg-slate-950/70 backdrop-blur-md">
+        <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-400 font-black text-slate-900 shadow-glow">
+              PT
+            </div>
+            <div class="text-xl font-bold tracking-tight text-white">Phạm Đức Tài</div>
+          </div>
+
+          <div class="hidden items-center gap-8 text-sm font-medium text-slate-300 md:flex">
+            <a href="#about" class="transition hover:text-cyan-300">Về tôi</a>
+            <a href="#skills" class="transition hover:text-cyan-300">Kỹ năng</a>
+            <a href="#experience" class="transition hover:text-cyan-300">Kinh nghiệm</a>
+            <a href="#contact" class="transition hover:text-cyan-300">Liên hệ</a>
+            <a href="#contact" class="rounded-full border border-cyan-400/60 bg-cyan-500/10 px-4 py-2 text-cyan-300 transition hover:bg-cyan-500/20">Hợp tác</a>
+          </div>
+        </nav>
+      </header>
+
+      <main>
+        <section class="mx-auto max-w-6xl px-4 pb-16 pt-16 sm:px-6 lg:px-8 lg:pt-20">
+          <div class="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+            <div>
+              <div class="mb-6 inline-flex rounded-full border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300">
+                Software Engineer & Full-Stack Developer
+              </div>
+
+              <h1 class="max-w-2xl text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-7xl">
+                PHẠM ĐỨC TÀI
+              </h1>
+
+              <p class="mt-5 text-2xl font-semibold text-slate-100 sm:text-3xl">
+                Software Engineer & Full-Stack Developer (1999)
+              </p>
+
+              <p class="mt-6 max-w-xl text-base leading-8 text-slate-400 sm:text-lg">
+                Building sustainable tech solutions - Optimizing workflows. Clean code, smooth systems,
+                and practical problem-solving.
+              </p>
+
+              <div class="mt-8 flex flex-wrap gap-4">
+                <a href="#experience" class="rounded-xl bg-cyan-400 px-6 py-3 font-semibold text-slate-950 shadow-glow transition hover:scale-[1.02] hover:bg-cyan-300">Xem dự án</a>
+                <a href="#contact" class="rounded-xl border border-slate-600 bg-slate-800/60 px-6 py-3 font-semibold text-white transition hover:border-cyan-400 hover:text-cyan-300">Liên hệ</a>
+              </div>
+            </div>
+
+            <div class="relative">
+              <div class="absolute -left-6 top-12 h-32 w-32 rounded-full bg-cyan-400/20 blur-3xl"></div>
+              <div class="absolute -right-6 bottom-8 h-32 w-32 rounded-full bg-yellow-400/10 blur-3xl"></div>
+
+              <div class="relative overflow-hidden rounded-[28px] border border-cyan-400/20 bg-slate-900/70 p-3 shadow-2xl shadow-slate-950/40">
+                <div class="overflow-hidden rounded-[22px] border border-slate-700/50">
+                  <img
+                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80"
+                    alt="Phạm Đức Tài"
+                    class="h-[520px] w-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="about" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div class="mb-10 inline-flex rounded-full border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300">
+            About Me
+          </div>
+
+          <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+            <div class="space-y-5 text-slate-300">
+              <p>
+                Tôi tốt nghiệp chuyên ngành Công nghệ Thông tin, có tư duy logic tốt và khả năng giải quyết
+                bài toán hệ thống từ Frontend đến Backend. Tôi luôn đặt hiệu năng, độ bảo mật và tính mở rộng
+                của mã nguồn lên hàng đầu.
+              </p>
+              <p>
+                Làm việc với mục tiêu xây dựng hệ thống vận hành thật sự hiệu quả, tôi ưu tiên các giải pháp
+                bền vững, dễ mở rộng và phù hợp với thực tế doanh nghiệp, không chỉ đẹp trên giao diện mà còn
+                ổn định trong vận hành thực tế.
+              </p>
+              <div class="rounded-2xl border border-cyan-400/20 bg-cyan-500/5 p-5 text-lg italic text-white">
+                “Clean code, smooth systems, practical problem-solving.”
+              </div>
+            </div>
+
+            <div class="grid gap-4">
+              <div class="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
+                <div class="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-cyan-300">Core Strength</div>
+                <h3 class="text-xl font-bold text-white">Tư duy hệ thống</h3>
+              </div>
+              <div class="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
+                <div class="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-cyan-300">Focus</div>
+                <h3 class="text-xl font-bold text-white">Performance & scalability</h3>
+              </div>
+              <div class="rounded-2xl border border-slate-700 bg-slate-900/70 p-5">
+                <div class="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-cyan-300">Mindset</div>
+                <h3 class="text-xl font-bold text-white">Practical engineering</h3>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="skills" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div class="mb-10 inline-flex rounded-full border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300">
+            Skills & Expertise
+          </div>
+
+          <h2 class="mb-10 text-3xl font-black tracking-tight text-white sm:text-5xl">
+            Kỹ năng đáp ứng từ Frontend đến Backend.
+          </h2>
+
+          <div class="grid gap-6 lg:grid-cols-3">
+            <div class="rounded-3xl border border-slate-700 bg-slate-900/70 p-6">
+              <h3 class="mb-5 text-2xl font-bold text-white">Backend & Core</h3>
+              <div class="flex flex-wrap gap-3">
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">C#</span>
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">.NET</span>
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">PHP</span>
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">SQL Server</span>
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">MySQL</span>
+              </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-700 bg-slate-900/70 p-6">
+              <h3 class="mb-5 text-2xl font-bold text-white">Frontend & UI</h3>
+              <div class="flex flex-wrap gap-3">
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">HTML5</span>
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">CSS3</span>
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">JavaScript (ES6)</span>
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">Tailwind CSS</span>
+              </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-700 bg-slate-900/70 p-6">
+              <h3 class="mb-5 text-2xl font-bold text-white">Automation & Tools</h3>
+              <div class="flex flex-wrap gap-3">
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">n8n</span>
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">API Integration</span>
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">Git</span>
+                <span class="rounded-full border border-slate-600 bg-slate-800/80 px-4 py-2 text-sm text-slate-200">Workflow Automation</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="experience" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div class="mb-10 inline-flex rounded-full border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300">
+            Experience & Projects
+          </div>
+
+          <div class="relative border-l border-slate-700 pl-6 lg:pl-10">
+            <div class="relative mb-10 pl-6">
+              <div class="absolute -left-[2.2rem] top-2 h-4 w-4 rounded-full border-4 border-slate-950 bg-cyan-400 shadow-glow"></div>
+              <div class="rounded-3xl border border-slate-700 bg-slate-900/70 p-6">
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <span class="rounded-full border border-cyan-400/40 bg-cyan-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300">
+                    E-Commerce Web System
+                  </span>
+                  <span class="text-sm text-slate-400">Full-Stack Developer</span>
+                </div>
+                <h3 class="mb-2 text-2xl font-bold text-white">Online Shopping Platform</h3>
+                <p class="text-slate-300">
+                  Built a full-stack e-commerce web system with integrated payment gateways, shopping cart,
+                  product management, and UX/UI optimization to improve conversion rates and customer flow.
+                </p>
+              </div>
+            </div>
+
+            <div class="relative mb-10 pl-6">
+              <div class="absolute -left-[2.2rem] top-2 h-4 w-4 rounded-full border-4 border-slate-950 bg-cyan-400 shadow-glow"></div>
+              <div class="rounded-3xl border border-slate-700 bg-slate-900/70 p-6">
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <span class="rounded-full border border-cyan-400/40 bg-cyan-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300">
+                    Workflow Automation
+                  </span>
+                  <span class="text-sm text-slate-400">Backend Engineer</span>
+                </div>
+                <h3 class="mb-2 text-2xl font-bold text-white">Automation Systems</h3>
+                <p class="text-slate-300">
+                  Designed API integration flows and workflow automation systems to synchronize data across
+                  platforms, reduce manual operations, and improve internal processing efficiency.
+                </p>
+              </div>
+            </div>
+
+            <div class="relative pl-6">
+              <div class="absolute -left-[2.2rem] top-2 h-4 w-4 rounded-full border-4 border-slate-950 bg-cyan-400 shadow-glow"></div>
+              <div class="rounded-3xl border border-slate-700 bg-slate-900/70 p-6">
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <span class="rounded-full border border-cyan-400/40 bg-cyan-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300">
+                    Internal Management App
+                  </span>
+                  <span class="text-sm text-slate-400">.NET / C#</span>
+                </div>
+                <h3 class="mb-2 text-2xl font-bold text-white">Internal Web Management System</h3>
+                <p class="text-slate-300">
+                  Developed a business management application on .NET/C# to manage operational workflows,
+                  internal data, and business processes with a focus on performance and maintainability.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+            <div>
+              <div class="mb-6 inline-flex rounded-full border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300">
+                Contact
+              </div>
+              <h2 class="mb-4 text-3xl font-black tracking-tight text-white sm:text-5xl">
+                Let’s build something meaningful together.
+              </h2>
+              <p class="text-slate-300">
+                If you're looking for a developer who can build sustainable products, streamline systems,
+                and solve real-world technology challenges, I'd love to connect.
+              </p>
+
+              <div class="mt-8 space-y-3 text-slate-200">
+                <a href="mailto:phamductai.dev@gmail.com" class="block transition hover:text-cyan-300">Email: phamductai.dev@gmail.com</a>
+                <a href="tel:+84987654321" class="block transition hover:text-cyan-300">Phone: +84 987 654 321</a>
+                <a href="https://github.com" target="_blank" rel="noreferrer" class="block transition hover:text-cyan-300">GitHub</a>
+                <a href="https://linkedin.com" target="_blank" rel="noreferrer" class="block transition hover:text-cyan-300">LinkedIn</a>
+                <a href="https://facebook.com" target="_blank" rel="noreferrer" class="block transition hover:text-cyan-300">Facebook</a>
+                <a href="https://zalo.me" target="_blank" rel="noreferrer" class="block transition hover:text-cyan-300">Zalo</a>
+              </div>
+            </div>
+
+            <form class="rounded-3xl border border-slate-700 bg-slate-900/70 p-6 shadow-2xl shadow-slate-950/20" onsubmit="event.preventDefault(); alert('Cảm ơn bạn! Tin nhắn của bạn đã được gửi.');">
+              <div class="mb-5">
+                <label class="mb-2 block text-sm font-medium text-slate-300">Họ tên</label>
+                <input type="text" class="w-full rounded-xl border border-slate-600 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-cyan-400" placeholder="Nhập họ tên" />
+              </div>
+
+              <div class="mb-5">
+                <label class="mb-2 block text-sm font-medium text-slate-300">Email</label>
+                <input type="email" class="w-full rounded-xl border border-slate-600 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-cyan-400" placeholder="Nhập email" />
+              </div>
+
+              <div class="mb-6">
+                <label class="mb-2 block text-sm font-medium text-slate-300">Lời nhắn</label>
+                <textarea rows="5" class="w-full rounded-xl border border-slate-600 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-cyan-400" placeholder="Viết lời nhắn..."></textarea>
+              </div>
+
+              <button type="submit" class="w-full rounded-xl bg-cyan-400 px-5 py-3 font-semibold text-slate-950 shadow-glow transition hover:bg-cyan-300">
+                Gửi tin nhắn
+              </button>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="newYearPanel" class="new-year-panel" aria-live="polite" aria-hidden="true">
+      <div class="text-center px-4">
+        <div class="text-xs font-semibold uppercase tracking-[0.5em] text-slate-300/80">HAPPY NEW YEAR</div>
+        <h2 class="new-year-text mt-5 text-3xl sm:text-5xl lg:text-7xl">
+          HAPPY NEW YEAR 2029 - VẠN SỰ NHƯ Ý
+        </h2>
+      </div>
+    </div>
+
+    <canvas id="fireworksCanvas" class="fireworks-canvas" aria-hidden="true"></canvas>
+
+    <script>
+      (() => {
+        const lightningLayer = document.getElementById('lightningLayer');
+        const flashSurface = document.getElementById('flashSurface');
+        const promptBadge = document.getElementById('promptBadge');
+        const cvShell = document.getElementById('cvShell');
+        const newYearPanel = document.getElementById('newYearPanel');
+        const fireworksCanvas = document.getElementById('fireworksCanvas');
+        const ctx = fireworksCanvas.getContext('2d');
+
+        let lightningTimer = null;
+        let firstClickTriggered = false;
+        let fireworksFrame = null;
+        let fireworksStartedAt = 0;
+
+        function randomBetween(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        function stopLightningAmbient() {
+          if (lightningTimer) {
+            clearTimeout(lightningTimer);
+            lightningTimer = null;
+          }
+
+          flashSurface.classList.remove('active');
+          lightningLayer.querySelectorAll('.bolt').forEach((bolt) => bolt.remove());
+        }
+
+        function triggerLightning() {
+          if (firstClickTriggered) return;
+
+          flashSurface.classList.remove('active', 'flicker');
+          void flashSurface.offsetWidth;
+
+          const mode = Math.random();
+          if (mode > 0.62) {
+            flashSurface.classList.add('flicker');
+            setTimeout(() => flashSurface.classList.remove('flicker'), 180 + Math.random() * 180);
+          } else {
+            flashSurface.classList.add('active');
+          }
+
+          if (Math.random() > 0.25) {
+            const bolt = document.createElement('div');
+            bolt.className = 'bolt';
+            bolt.style.left = `${randomBetween(8, 92)}vw`;
+            bolt.style.height = `${randomBetween(22, 68)}vh`;
+            bolt.style.transform = `skewX(${randomBetween(-22, 22)}deg)`;
+            lightningLayer.appendChild(bolt);
+            setTimeout(() => bolt.remove(), 220);
+          }
+
+          const nextDelay = 500;
+          lightningTimer = setTimeout(triggerLightning, nextDelay);
+        }
+
+        function startAmbientLightning() {
+          if (firstClickTriggered) return;
+          triggerLightning();
+        }
+
+        function createBurstParticles(x, y) {
+          for (let i = 0; i < 32; i += 1) {
+            const particle = document.createElement('span');
+            particle.style.position = 'fixed';
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.width = '8px';
+            particle.style.height = '8px';
+            particle.style.borderRadius = '9999px';
+            particle.style.pointerEvents = 'none';
+            particle.style.background = `hsl(${Math.random() * 360}, 100%, 65%)`;
+            particle.style.boxShadow = '0 0 12px rgba(255,255,255,0.8)';
+            particle.style.setProperty('--dx', `${randomBetween(-120, 120)}px`);
+            particle.style.setProperty('--dy', `${randomBetween(-120, 120)}px`);
+            particle.style.animation = 'burstPop 0.8s ease-out forwards';
+            particle.style.transform = 'translate(-50%, -50%) scale(1)';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 800);
+          }
+        }
+
+        function ensureCanvasSize() {
+          const ratio = window.devicePixelRatio || 1;
+          fireworksCanvas.width = window.innerWidth * ratio;
+          fireworksCanvas.height = window.innerHeight * ratio;
+          fireworksCanvas.style.width = `${window.innerWidth}px`;
+          fireworksCanvas.style.height = `${window.innerHeight}px`;
+          ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        }
+
+        function startFireworks() {
+          ensureCanvasSize();
+          fireworksCanvas.classList.add('show');
+          fireworksCanvas.classList.remove('fade-out');
+
+          const rockets = [];
+          const particles = [];
+
+          function createRocket() {
+            rockets.push({
+              x: Math.random() * window.innerWidth,
+              y: window.innerHeight,
+              targetX: Math.random() * window.innerWidth,
+              targetY: Math.random() * (window.innerHeight * 0.45),
+              hue: Math.random() * 360,
+              life: 1
+            });
+          }
+
+          function explode(x, y, hue) {
+            for (let i = 0; i < 55; i += 1) {
+              const angle = (Math.PI * 2 * i) / 55;
+              const speed = 2.2 + Math.random() * 5;
+              particles.push({
+                x,
+                y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                life: 80 + Math.random() * 50,
+                hue,
+                size: 2 + Math.random() * 2.8
+              });
+            }
+          }
+
+          function tick() {
+            const elapsed = Date.now() - fireworksStartedAt;
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+            if (Math.random() < 0.07) {
+              createRocket();
+            }
+
+            for (let i = rockets.length - 1; i >= 0; i -= 1) {
+              const rocket = rockets[i];
+              rocket.x += (rocket.targetX - rocket.x) * 0.08;
+              rocket.y += (rocket.targetY - rocket.y) * 0.08;
+
+              ctx.beginPath();
+              ctx.fillStyle = `hsl(${rocket.hue}, 100%, 62%)`;
+              ctx.arc(rocket.x, rocket.y, 3.2, 0, Math.PI * 2);
+              ctx.fill();
+
+              if (Math.abs(rocket.targetY - rocket.y) < 5) {
+                explode(rocket.x, rocket.y, rocket.hue);
+                rockets.splice(i, 1);
+              }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i -= 1) {
+              const particle = particles[i];
+              particle.x += particle.vx;
+              particle.y += particle.vy;
+              particle.vy += 0.05;
+              particle.life -= 1;
+
+              if (particle.life <= 0) {
+                particles.splice(i, 1);
+                continue;
+              }
+
+              ctx.beginPath();
+              ctx.fillStyle = `hsla(${particle.hue}, 100%, 68%, ${Math.max(particle.life / 100, 0.1)})`;
+              ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+
+            if (elapsed < 6000) {
+              fireworksFrame = requestAnimationFrame(tick);
+            } else {
+              fireworksCanvas.classList.add('fade-out');
+              setTimeout(() => {
+                fireworksCanvas.classList.remove('show');
+                fireworksCanvas.classList.remove('fade-out');
+              }, 800);
+            }
+          }
+
+          fireworksStartedAt = Date.now();
+          fireworksFrame = requestAnimationFrame(tick);
+        }
+
+        function destroyFireworksAnimation() {
+          if (fireworksFrame) {
+            cancelAnimationFrame(fireworksFrame);
+            fireworksFrame = null;
+          }
+          ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        }
+
+        function restoreCv() {
+          cvShell.classList.remove('hidden', 'exploding');
+          cvShell.classList.add('restore');
+          setTimeout(() => cvShell.classList.remove('restore'), 700);
+
+          newYearPanel.classList.remove('show');
+          newYearPanel.classList.add('fade-out');
+          setTimeout(() => newYearPanel.classList.remove('fade-out'), 500);
+
+          promptBadge.classList.remove('hidden');
+          startAmbientLightning();
+        }
+
+        let audioCtx = null;
+        let masterGain = null;
+        let houseLoopTimer = null;
+
+        function playHouseTone(freq, duration, gainValue, type = 'sine', detune = 0) {
+          if (!audioCtx || !masterGain) return;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.value = freq;
+          osc.detune.value = detune;
+          gain.gain.value = 0.0001;
+          osc.connect(gain);
+          gain.connect(masterGain);
+
+          const now = audioCtx.currentTime;
+          gain.gain.exponentialRampToValueAtTime(gainValue, now + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+          osc.start(now);
+          osc.stop(now + duration + 0.02);
+        }
+
+        function playKick() {
+          if (!audioCtx || !masterGain) return;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(48, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.16);
+          gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.45, audioCtx.currentTime + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.18);
+          osc.connect(gain);
+          gain.connect(masterGain);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.2);
+        }
+
+        function playSnare() {
+          if (!audioCtx || !masterGain) return;
+          const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.12, audioCtx.sampleRate);
+          const channel = noiseBuffer.getChannelData(0);
+          for (let i = 0; i < channel.length; i += 1) {
+            channel[i] = Math.random() * 2 - 1;
+          }
+
+          const noise = audioCtx.createBufferSource();
+          const filter = audioCtx.createBiquadFilter();
+          const gain = audioCtx.createGain();
+          noise.buffer = noiseBuffer;
+          filter.type = 'highpass';
+          filter.frequency.value = 1200;
+          gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.16, audioCtx.currentTime + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.09);
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(masterGain);
+          noise.start();
+          noise.stop(audioCtx.currentTime + 0.12);
+        }
+
+        function playHihat() {
+          if (!audioCtx || !masterGain) return;
+          const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
+          const channel = noiseBuffer.getChannelData(0);
+          for (let i = 0; i < channel.length; i += 1) {
+            channel[i] = Math.random() * 2 - 1;
+          }
+          const noise = audioCtx.createBufferSource();
+          const highpass = audioCtx.createBiquadFilter();
+          const gain = audioCtx.createGain();
+          noise.buffer = noiseBuffer;
+          highpass.type = 'highpass';
+          highpass.frequency.value = 5000;
+          gain.gain.value = 0.0001;
+          gain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 0.005);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
+          noise.connect(highpass);
+          highpass.connect(gain);
+          gain.connect(masterGain);
+          noise.start();
+          noise.stop(audioCtx.currentTime + 0.05);
+        }
+
+        function startVinahouseLoop() {
+          if (houseLoopTimer) return;
+
+          const pattern = [0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1];
+          let step = 0;
+
+          houseLoopTimer = setInterval(() => {
+            if (!audioCtx || !masterGain) return;
+            const time = audioCtx.currentTime;
+            const bass = [55, 65.41, 73.42, 82.41][step % 4];
+
+            if (step % 2 === 0) playKick();
+            if (step % 2 === 1) playSnare();
+            if (pattern[step % pattern.length] === 1) {
+              playHihat();
+            }
+
+            if (step % 4 === 0) {
+              playHouseTone(bass, 0.18, 0.08, 'sawtooth', 6);
+            }
+            if (step % 4 === 2) {
+              playHouseTone(bass * 1.5, 0.2, 0.05, 'triangle', -3);
+            }
+
+            step += 1;
+          }, 140);
+        }
+
+        function initAudio() {
+          if (audioCtx) {
+            if (audioCtx.state === 'suspended') {
+              audioCtx.resume();
+            }
+            return;
+          }
+
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          masterGain = audioCtx.createGain();
+          masterGain.gain.value = 0.06;
+          masterGain.connect(audioCtx.destination);
+          startVinahouseLoop();
+        }
+
+        document.addEventListener('click', () => {
+          if (firstClickTriggered) return;
+          firstClickTriggered = true;
+
+          initAudio();
+          stopLightningAmbient();
+          promptBadge.classList.add('hidden');
+
+          cvShell.classList.add('exploding');
+          createBurstParticles(window.innerWidth / 2, window.innerHeight / 2);
+
+          setTimeout(() => {
+            cvShell.classList.add('hidden');
+            newYearPanel.classList.add('show');
+            newYearPanel.setAttribute('aria-hidden', 'false');
+            fireworksCanvas.classList.add('show');
+            startFireworks();
+          }, 280);
+
+          setTimeout(() => {
+            destroyFireworksAnimation();
+            newYearPanel.classList.add('fade-out');
+            fireworksCanvas.classList.add('fade-out');
+
+            setTimeout(() => {
+              newYearPanel.classList.remove('show', 'fade-out');
+              fireworksCanvas.classList.remove('show', 'fade-out');
+              cvShell.classList.remove('hidden', 'exploding');
+              cvShell.classList.add('restore');
+              setTimeout(() => cvShell.classList.remove('restore'), 700);
+            }, 800);
+          }, 6000);
+        }, { once: true });
+
+        window.addEventListener('resize', ensureCanvasSize);
+        startAmbientLightning();
+
+      })();
+    </script>
+  </body>
+</html>
